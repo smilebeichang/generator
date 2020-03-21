@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xiaoPang.mainframe.dao.RbAnswerInfoDao">
+	<!-- 返回值映射map -->
+	<resultMap id="rbAnswerInfoMapper" type="com.xiaoPang.mainframe.model.RbAnswerInfoModel">
+			<result property="code" column="CODE" />
+			<result property="patternCode" column="PATTERN_CODE" />
+			<result property="content" column="CONTENT" />
+			<result property="createDate" column="CREATE_DATE" />
+			<result property="createrCode" column="CREATER_CODE" />
+			<result property="status" column="STATUS" />
+			<result property="method" column="METHOD" />
+	</resultMap>
+	
+	<!-- 查询数量公共sql -->
+	<sql id="count_Tail">
+		select count(1) from rb_answer_info record
+	</sql>
+	
+	<!-- 分页公共sql -->
+	<sql id="pagination_tail">
+	  limit #{page.pageOffset} , #{page.pageSize}
+	</sql>
+	<!-- 查询字段公共sql -->
+	<sql id="selectAllColumns">
+	    SELECT 
+	    <if test="queryFields != null ">
+	 	     <trim prefix="" suffix="" suffixOverrides=",">
+		        <foreach collection="queryFields" item="fi" index="index">
+		          ${fi},
+		        </foreach>
+		      </trim> 	
+	  	</if>
+	    <if test="queryFields == null ">
+	  		<![CDATA[
+				 CODE, 
+				 PATTERN_CODE, 
+				 CONTENT, 
+				 CREATE_DATE, 
+				 CREATER_CODE, 
+				 STATUS, 
+				 METHOD 
+			]]>
+	  	</if>
+	     FROM rb_answer_info record
+	</sql>
+	
+	<sql id="where_fragement">
+		<where> 
+			<if test="entity!=null">
+					<if test = "entity.code != null and entity.code != ''">
+						<![CDATA[ and record.CODE  = #{entity.code} ]]>
+					</if>
+					<if test = "entity.patternCode != null and entity.patternCode != ''">
+						<![CDATA[ and record.PATTERN_CODE  = #{entity.patternCode} ]]>
+					</if>
+					<if test = "entity.content != null and entity.content != ''">
+						<![CDATA[ and record.CONTENT  = #{entity.content} ]]>
+					</if>
+					<if test = "entity.createDate != null and entity.createDate != ''">
+						<![CDATA[ and record.CREATE_DATE  = #{entity.createDate} ]]>
+					</if>
+					<if test = "entity.createrCode != null and entity.createrCode != ''">
+						<![CDATA[ and record.CREATER_CODE  = #{entity.createrCode} ]]>
+					</if>
+					<if test = "entity.status != null and entity.status != ''">
+						<![CDATA[ and record.STATUS  = #{entity.status} ]]>
+					</if>
+					<if test = "entity.method != null and entity.method != ''">
+						<![CDATA[ and record.METHOD  = #{entity.method} ]]>
+					</if>
+			</if>
+		</where>
+	</sql>
+	
+	<sql id="time_sort">
+		order by createtime desc 
+	</sql>
+
+	<!-- 分页查询数据集合-->
+	<select id="queryPageRbAnswerInfo" resultMap="rbAnswerInfoMapper" >
+		<include refid="selectAllColumns"/>
+		<include refid="where_fragement" />
+		<include refid="time_sort" />
+		<if test="page!=null">
+			<include refid="pagination_tail" />
+		</if>
+		
+	</select>
+	
+	<!-- 不分页查询数据集合-->
+	<select id="queryListRbAnswerInfo" resultMap="rbAnswerInfoMapper" >
+		<include refid="selectAllColumns"/>
+		<include refid="where_fragement" />
+		<include refid="time_sort" />
+	</select>
+	
+	<!-- 查询总数量 -->
+	<select id="queryCountRbAnswerInfo" resultType="long">
+		<include refid="count_Tail"></include>
+		<include refid="where_fragement"></include>
+	</select>
+
+	<!-- 查询单个实体 -->
+	<select id="queryRbAnswerInfoById" resultMap="rbAnswerInfoMapper" >
+		<include refid="selectAllColumns"/>
+		 where 
+		 record.code = #{id}
+	</select>
+	
+	<!-- 新增列处理 -->
+	<sql id="sql_add_columns">
+		<trim suffixOverrides=",">
+			<if test="code != null">CODE,</if>
+			<if test="patternCode != null">PATTERN_CODE,</if>
+			<if test="content != null">CONTENT,</if>
+			<if test="createDate != null">CREATE_DATE,</if>
+			<if test="createrCode != null">CREATER_CODE,</if>
+			<if test="status != null">STATUS,</if>
+			<if test="method != null">METHOD,</if>
+		</trim>
+	</sql>
+	<sql id="sql_add_properties">
+		<trim suffixOverrides=",">
+				<if test="code != null">#{code},</if>
+				<if test="patternCode != null">#{patternCode},</if>
+				<if test="content != null">#{content},</if>
+				<if test="createDate != null">#{createDate},</if>
+				<if test="createrCode != null">#{createrCode},</if>
+				<if test="status != null">#{status},</if>
+				<if test="method != null">#{method},</if>
+		</trim>		
+	</sql>
+	
+	<!-- 新增 -->
+	<insert id="addRbAnswerInfo" parameterType="com.xiaoPang.mainframe.model.RbAnswerInfoModel">
+		insert into rb_answer_info(
+			<include refid="sql_add_columns"/>
+		)values(
+			<include refid="sql_add_properties"/>
+		)
+	</insert>
+	<!-- 编辑 -->
+	<update id="updateRbAnswerInfo" parameterType="com.xiaoPang.mainframe.model.RbAnswerInfoModel">
+		update rb_answer_info record 
+			<set>
+					<if test = "patternCode != null ">
+						record.PATTERN_CODE = #{patternCode},
+					</if>
+					<if test = "content != null ">
+						record.CONTENT = #{content},
+					</if>
+					<if test = "createDate != null ">
+						record.CREATE_DATE = #{createDate},
+					</if>
+					<if test = "createrCode != null ">
+						record.CREATER_CODE = #{createrCode},
+					</if>
+					<if test = "status != null ">
+						record.STATUS = #{status},
+					</if>
+					<if test = "method != null ">
+						record.METHOD = #{method}
+					</if>
+			</set>
+		where code = #{code}
+	</update>
+	
+	<!-- 删除 -->
+	<delete id="removeRbAnswerInfoByIds" parameterType="java.util.List">
+		delete from rb_answer_info 
+			where code in
+			<foreach collection="list" open="(" separator="," close=")" item="code">
+				#{code}
+			</foreach>
+		
+	</delete>
+	<delete id="removeRbAnswerInfoById">
+		delete from rb_answer_info 
+		<if test=" id != null and id != ''">
+			where code = #{id}
+		</if>
+	</delete>
+	
+</mapper>
